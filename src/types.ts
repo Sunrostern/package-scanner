@@ -2,6 +2,9 @@ export enum AlertType {
   INSTALL_SCRIPT = 'install_script',
   NETWORK_ACCESS = 'network_access',
   TYPOSQUAT = 'typosquat',
+  FILESYSTEM_ACCESS = 'filesystem_access',
+  OBFUSCATED_CODE = 'obfuscated_code',
+  SHELL_ACCESS = 'shell_access',
 }
 
 export interface Alert {

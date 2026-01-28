@@ -4,7 +4,52 @@
 [![npm downloads](https://img.shields.io/npm/dm/npm-malware-scanner.svg)](https://www.npmjs.com/package/npm-malware-scanner)
 [![license](https://img.shields.io/npm/l/npm-malware-scanner.svg)](https://github.com/socket-security/npm-scanner/blob/main/LICENSE)
 
-Real-time malware scanner for npm packages. Detects install scripts, network access, and typosquatting attacks.
+Real-time malware scanner for npm packages. Detects install scripts, shell access, obfuscated code, network access, filesystem access, and typosquatting attacks.
+
+## External Resources & Research
+
+**How many hours did you spend?** Roughly 5 hours.
+
+**Did you have adequate time to work on the code submission?** For an alpha version, I think so.
+
+**Did you use any AI coding tools to assist with coding?** Yes, ChatGPT and Claude.
+
+**Did you leverage external resources?** Yes. This project was built using industry best practices and research from security experts. Google, StackOverflow, and NPM documentation were also used for research.
+
+### Key Resources Used
+
+**Supply Chain Security:**
+- [Socket.dev Documentation](https://socket.dev/npm/issue) - Alert types and detection strategies
+- [npm Security Best Practices](https://docs.npmjs.com/packages-and-modules/securing-your-code) - Understanding npm security model
+- [OWASP Top 10 for CI/CD](https://owasp.org/www-project-top-10-ci-cd-security-risks/) - CI/CD security risks
+
+**Static Analysis Techniques:**
+- [Babel Parser Documentation](https://babeljs.io/docs/babel-parser) - AST parsing for JavaScript/TypeScript
+- [ESLint Source Code](https://github.com/eslint/eslint) - Pattern matching and code analysis techniques
+- [Shannon Entropy](https://en.wikipedia.org/wiki/Entropy_(information_theory)) - Obfuscation detection using information theory
+
+**Typosquatting Research:**
+- [Levenshtein Distance Algorithm](https://en.wikipedia.org/wiki/Levenshtein_distance) - String similarity measurement
+- [Typosquatting on PyPI](https://arxiv.org/abs/2003.03471) - Academic research on package name attacks
+- [npm Typosquatting Attacks](https://blog.sonatype.com/damaging-linux-mac-malware-bundled-within-browserify-npm-brandjack-attempt) - Real-world examples
+
+**npm Registry APIs:**
+- [npm Registry API](https://github.com/npm/registry/blob/master/docs/REGISTRY-API.md) - Package metadata and download
+- [CouchDB Changes Feed](https://docs.couchdb.org/en/stable/api/database/changes.html) - Real-time monitoring
+- [npm Replicate API](https://replicate.npmjs.com/) - Live package feed
+
+**Notable CVEs & Attacks:**
+- [CVE-2021-44906](https://nvd.nist.gov/vuln/detail/CVE-2021-44906) - Minimist prototype pollution
+- [event-stream incident](https://blog.npmjs.org/post/180565383195/details-about-the-event-stream-incident) - Malicious dependency injection
+- [ua-parser-js attack](https://github.com/advisories/GHSA-pjwm-rvh2-c87w) - Cryptocurrency miner in popular package
+- [coa and rc packages](https://blog.sonatype.com/npm-hijackers-at-it-again-popular-coa-and-rc-open-source-libraries-taken-over) - Account takeover attacks
+
+**Why These Resources?**
+- **Socket.dev** - Understand the product we're building towards
+- **Academic papers** - Proven algorithms for typosquat detection
+- **Real CVEs** - Learn from actual attacks to build better detectors
+- **npm APIs** - Official documentation for reliable integration
+- **Open source projects** - Learn from battle-tested implementations (ESLint, Babel)
 
 ## Installation
 
@@ -189,7 +234,10 @@ pnpm test:coverage
 
 **Test Coverage:**
 - Install script detection
+- Shell access detection (child_process, exec, spawn)
+- Obfuscation detection (entropy analysis)
 - Network access detection (http, fetch, axios, etc.)
+- Filesystem access detection (fs module operations)
 - Typosquat detection (Levenshtein distance)
 - Edge cases and error handling
 

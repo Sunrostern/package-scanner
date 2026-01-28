@@ -2,6 +2,9 @@ import { NpmRegistry, PackageInfo } from './npm/registry';
 import { InstallScriptDetector } from './detectors/install-scripts';
 import { NetworkAccessDetector } from './detectors/network-access';
 import { TyposquatDetector } from './detectors/typosquat';
+import { FilesystemAccessDetector } from './detectors/filesystem-access';
+import { ObfuscationDetector } from './detectors/obfuscation';
+import { ShellAccessDetector } from './detectors/shell-access';
 import { ScanResult, Alert } from './types';
 import { Logger } from './utils/logger';
 
@@ -17,15 +20,28 @@ export class PackageScanner {
 
       const alerts: Alert[] = [];
 
-      const [installScriptResult, networkAccessResult, typosquatResult] = await Promise.all([
+      const [
+        installScriptResult,
+        networkAccessResult,
+        typosquatResult,
+        filesystemResult,
+        obfuscationResult,
+        shellAccessResult,
+      ] = await Promise.all([
         InstallScriptDetector.detect(packageInfo.extractedPath),
         NetworkAccessDetector.detect(packageInfo.extractedPath),
         TyposquatDetector.detect(packageName),
+        FilesystemAccessDetector.detect(packageInfo.extractedPath),
+        ObfuscationDetector.detect(packageInfo.extractedPath),
+        ShellAccessDetector.detect(packageInfo.extractedPath),
       ]);
 
       alerts.push(...installScriptResult.alerts);
       alerts.push(...networkAccessResult.alerts);
       alerts.push(...typosquatResult.alerts);
+      alerts.push(...filesystemResult.alerts);
+      alerts.push(...obfuscationResult.alerts);
+      alerts.push(...shellAccessResult.alerts);
 
       const result: ScanResult = {
         packageName,
