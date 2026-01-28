@@ -1,0 +1,58 @@
+name: Security Scan
+
+on:
+  pull_request:
+    paths:
+      - 'package.json'
+      - 'package-lock.json'
+      - 'pnpm-lock.yaml'
+      - 'yarn.lock'
+  workflow_dispatch:
+
+jobs:
+  scan-dependencies:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install scanner
+        run: npm install -g npm-malware-scanner
+
+      - name: Scan new dependencies
+        run: |
+          # Example: Scan specific packages
+          npm-scanner express 4.18.2
+          npm-scanner axios 1.6.0
+          
+          # Or scan all dependencies from package.json
+          # node -e "
+          #   const pkg = require('./package.json');
+          #   const { execSync } = require('child_process');
+          #   Object.entries(pkg.dependencies || {}).forEach(([name, version]) => {
+          #     const v = version.replace(/^[\^~]/, '');
+          #     try {
+          #       execSync(\`npm-scanner \${name} \${v}\`, { stdio: 'inherit' });
+          #     } catch (e) {
+          #       console.error(\`Failed to scan \${name}@\${v}\`);
+          #     }
+          #   });
+          # "
+
+      - name: Comment on PR (optional)
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '⚠️ Security alerts detected in dependencies. Please review the scan results above.'
+            })
