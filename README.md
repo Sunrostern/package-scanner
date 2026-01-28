@@ -14,7 +14,7 @@ Real-time malware scanner for npm packages. Detects install scripts, shell acces
 
 **Did you use any AI coding tools to assist with coding?** Yes, ChatGPT and Claude.
 
-**Did you leverage external resources?** Yes. This project was built using industry best practices and research from security experts. Google, StackOverflow, and NPM documentation were also used for research.
+**Did you leverage external resources?** Yes. This project was built using industry best practices and research from security experts. Google, StackOverflow, and reference documentation were also used for research.
 
 ### Key Resources Used
 
@@ -36,13 +36,11 @@ Real-time malware scanner for npm packages. Detects install scripts, shell acces
 **npm Registry APIs:**
 - [npm Registry API](https://github.com/npm/registry/blob/master/docs/REGISTRY-API.md) - Package metadata and download
 - [CouchDB Changes Feed](https://docs.couchdb.org/en/stable/api/database/changes.html) - Real-time monitoring
-- [npm Replicate API](https://replicate.npmjs.com/) - Live package feed
 
 **Notable CVEs & Attacks:**
 - [CVE-2021-44906](https://nvd.nist.gov/vuln/detail/CVE-2021-44906) - Minimist prototype pollution
 - [event-stream incident](https://blog.npmjs.org/post/180565383195/details-about-the-event-stream-incident) - Malicious dependency injection
 - [ua-parser-js attack](https://github.com/advisories/GHSA-pjwm-rvh2-c87w) - Cryptocurrency miner in popular package
-- [coa and rc packages](https://blog.sonatype.com/npm-hijackers-at-it-again-popular-coa-and-rc-open-source-libraries-taken-over) - Account takeover attacks
 
 **Why These Resources?**
 - **Socket.dev** - Understand the product we're building towards
