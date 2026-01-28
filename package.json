@@ -1,6 +1,6 @@
 {
   "name": "npm-malware-scanner",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Real-time malware scanner for npm packages",
   "main": "dist/scanner.js",
   "types": "dist/scanner.d.ts",
@@ -17,7 +17,7 @@
     "type": "git",
     "url": "https://github.com/Sunrostern/package-scanner"
   },
-  "homepage": "https://github.com/Sunrostern/package-scanner",
+  "homepage": "https://www.viewert.com/vellum/v21aabe98907db405c461",
   "scripts": {
     "build": "tsc",
     "start": "node dist/cli.js",
