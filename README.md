@@ -6,16 +6,6 @@
 
 Real-time malware scanner for npm packages. Detects install scripts, shell access, obfuscated code, network access, filesystem access, and typosquatting attacks.
 
-## External Resources & Research
-
-**How many hours did you spend?** Roughly 5 hours.
-
-**Did you have adequate time to work on the code submission?** For an alpha version, I think so.
-
-**Did you use any AI coding tools to assist with coding?** Yes, ChatGPT and Claude.
-
-**Did you leverage external resources?** Yes. This project was built using industry best practices and research from security experts. Google, StackOverflow, and reference documentation were also used for research.
-
 ### Key Resources Used
 
 **Supply Chain Security:**
@@ -41,13 +31,6 @@ Real-time malware scanner for npm packages. Detects install scripts, shell acces
 - [CVE-2021-44906](https://nvd.nist.gov/vuln/detail/CVE-2021-44906) - Minimist prototype pollution
 - [event-stream incident](https://blog.npmjs.org/post/180565383195/details-about-the-event-stream-incident) - Malicious dependency injection
 - [ua-parser-js attack](https://github.com/advisories/GHSA-pjwm-rvh2-c87w) - Cryptocurrency miner in popular package
-
-**Why These Resources?**
-- **Socket.dev** - Understand the product we're building towards
-- **Academic papers** - Proven algorithms for typosquat detection
-- **Real CVEs** - Learn from actual attacks to build better detectors
-- **npm APIs** - Official documentation for reliable integration
-- **Open source projects** - Learn from battle-tested implementations (ESLint, Babel)
 
 ## Installation
 
