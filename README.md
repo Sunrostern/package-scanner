@@ -6,20 +6,9 @@
 
 Real-time malware scanner for npm packages. Detects install scripts, shell access, obfuscated code, network access, filesystem access, and typosquatting attacks.
 
-## External Resources & Research
-
-**How many hours did you spend?** Roughly 5 hours.
-
-**Did you have adequate time to work on the code submission?** For an alpha version, I think so.
-
-**Did you use any AI coding tools to assist with coding?** Yes, ChatGPT and Claude.
-
-**Did you leverage external resources?** Yes. This project was built using industry best practices and research from security experts. Google, StackOverflow, and reference documentation were also used for research.
-
 ### Key Resources Used
 
 **Supply Chain Security:**
-- [Socket.dev Documentation](https://socket.dev/npm/issue) - Alert types and detection strategies
 - [npm Security Best Practices](https://docs.npmjs.com/packages-and-modules/securing-your-code) - Understanding npm security model
 - [OWASP Top 10 for CI/CD](https://owasp.org/www-project-top-10-ci-cd-security-risks/) - CI/CD security risks
 
@@ -43,7 +32,6 @@ Real-time malware scanner for npm packages. Detects install scripts, shell acces
 - [ua-parser-js attack](https://github.com/advisories/GHSA-pjwm-rvh2-c87w) - Cryptocurrency miner in popular package
 
 **Why These Resources?**
-- **Socket.dev** - Understand the product we're building towards
 - **Academic papers** - Proven algorithms for typosquat detection
 - **Real CVEs** - Learn from actual attacks to build better detectors
 - **npm APIs** - Official documentation for reliable integration
@@ -195,7 +183,7 @@ alerts.push(...myResult.alerts);
 
 ```bash
 # Clone and setup
-git clone https://github.com/socket-security/npm-scanner
+git clone https://github.com/Sunrostern/npm-scanner
 cd npm-scanner
 pnpm install
 
