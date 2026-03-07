@@ -31,12 +31,6 @@ Real-time malware scanner for npm packages. Detects install scripts, shell acces
 - [event-stream incident](https://blog.npmjs.org/post/180565383195/details-about-the-event-stream-incident) - Malicious dependency injection
 - [ua-parser-js attack](https://github.com/advisories/GHSA-pjwm-rvh2-c87w) - Cryptocurrency miner in popular package
 
-**Why These Resources?**
-- **Academic papers** - Proven algorithms for typosquat detection
-- **Real CVEs** - Learn from actual attacks to build better detectors
-- **npm APIs** - Official documentation for reliable integration
-- **Open source projects** - Learn from battle-tested implementations (ESLint, Babel)
-
 ## Installation
 
 ```bash
