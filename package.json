@@ -1,6 +1,6 @@
 {
   "name": "npm-malware-scanner",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Real-time malware scanner for npm packages",
   "main": "dist/scanner.js",
   "types": "dist/scanner.d.ts",
