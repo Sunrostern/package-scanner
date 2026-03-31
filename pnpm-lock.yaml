@@ -29,9 +29,6 @@ importers:
       node-fetch:
         specifier: ^2.7.0
         version: 2.7.0
-      npm-malware-scanner:
-        specifier: ^0.0.1
-        version: 0.0.1
       tar:
         specifier: ^7.4.3
         version: 7.5.7
@@ -1089,11 +1086,6 @@ packages:
   normalize-path@3.0.0:
     resolution: {integrity: sha512-6eZs5Ls3WtCisHWp9S2GUy8dqkpGi4BVSz3GaqiE6ezub0512ESztXUwUB6C6IKbQkY2Pnb/mD4WYojCRwcwLA==}
     engines: {node: '>=0.10.0'}
-
-  npm-malware-scanner@0.0.1:
-    resolution: {integrity: sha512-zDUHjpqwAIGrSHGrebiS9vWjrjU6KaVoLi73N7mgFV2f+KRy99pjr0dzu3PaqE4uIA71KnDexhvyzu82xEguWQ==}
-    engines: {node: '>=22.0.0'}
-    hasBin: true
 
   npm-run-path@4.0.1:
     resolution: {integrity: sha512-S48WzZW777zhNIrn7gxOlISNAqi9ZC/uQFnRdbeIHhZhCA6UqpkOT8T1G7BvfdgP4Er8gF4sUbaS0i7QvIfCWw==}
@@ -2729,20 +2721,6 @@ snapshots:
   node-releases@2.0.27: {}
 
   normalize-path@3.0.0: {}
-
-  npm-malware-scanner@0.0.1:
-    dependencies:
-      '@babel/parser': 7.28.6
-      '@babel/traverse': 7.28.6
-      '@babel/types': 7.28.6
-      chalk: 4.1.2
-      commander: 11.1.0
-      fast-levenshtein: 3.0.0
-      node-fetch: 2.7.0
-      tar: 7.5.7
-    transitivePeerDependencies:
-      - encoding
-      - supports-color
 
   npm-run-path@4.0.1:
     dependencies:

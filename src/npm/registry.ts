@@ -4,6 +4,14 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
 
+/** Thrown when a package version returns HTTP 404 from the registry. */
+export class PackageNotFoundError extends Error {
+  constructor(public readonly packageName: string, public readonly version: string) {
+    super(`Failed to fetch package metadata: Not Found`);
+    this.name = 'PackageNotFoundError';
+  }
+}
+
 export interface PackageInfo {
   name: string;
   version: string;
@@ -21,6 +29,9 @@ export class NpmRegistry {
 
     const response = await fetch(url);
     if (!response.ok) {
+      if (response.status === 404) {
+        throw new PackageNotFoundError(packageName, version);
+      }
       throw new Error(`Failed to fetch package metadata: ${response.statusText}`);
     }
 
@@ -113,8 +124,7 @@ export class NpmRegistry {
     return [
       'react', 'lodash', 'express', 'axios', 'webpack', 'typescript', 'eslint',
       'prettier', 'jest', 'babel', 'vue', 'angular', 'next', 'redux', 'moment',
-      'chalk', 'commander', 'dotenv', 'cors', 'body-parser', 'mongoose', 'sequelize',
-      'socket.io', 'passport', 'bcrypt', 'jsonwebtoken', 'nodemon', 'mocha', 'chai',
+      'chalk', 'commander', 'dotenv', 'cors', 'body-parser', 'mongoose', 'sequelize', 'passport', 'bcrypt', 'jsonwebtoken', 'nodemon', 'mocha', 'chai',
       'request', 'async', 'underscore', 'jquery', 'bootstrap', 'tailwindcss',
     ];
   }

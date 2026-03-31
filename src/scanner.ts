@@ -1,12 +1,14 @@
-import { NpmRegistry, PackageInfo } from './npm/registry';
+import { NpmRegistry, PackageInfo, PackageNotFoundError } from './npm/registry';
 import { InstallScriptDetector } from './detectors/install-scripts';
 import { NetworkAccessDetector } from './detectors/network-access';
 import { TyposquatDetector } from './detectors/typosquat';
 import { FilesystemAccessDetector } from './detectors/filesystem-access';
 import { ObfuscationDetector } from './detectors/obfuscation';
 import { ShellAccessDetector } from './detectors/shell-access';
-import { ScanResult, Alert } from './types';
+import { ScanResult, Alert, AlertType } from './types';
 import { Logger } from './utils/logger';
+import { lookupKnownBad } from './ioc/known-bad';
+import { LockfileScanner } from './ioc/lockfile-scanner';
 
 export class PackageScanner {
   async scan(packageName: string, version: string): Promise<ScanResult> {
@@ -55,12 +57,51 @@ export class PackageScanner {
 
       return result;
     } catch (error) {
-      Logger.error(
-        `Failed to scan ${packageName}@${version}: ${
-          error instanceof Error ? error.message : 'Unknown error'
-        }`
-      );
-      
+      if (error instanceof PackageNotFoundError) {
+        const entry = lookupKnownBad(packageName, version);
+
+        if (entry) {
+          Logger.warning(
+            `${packageName}@${version} was unpublished from npm — matches known-compromised version list`
+          );
+          Logger.info('Scanning local lockfiles for evidence of prior installation...');
+
+          const alerts: Alert[] = [
+            {
+              type: AlertType.KNOWN_COMPROMISED,
+              severity: 'high',
+              message:
+                `${packageName}@${version} is a known-compromised version that was removed from npm`,
+              details: {
+                incident: entry.incident,
+                date: entry.date,
+                description: entry.ioc.description,
+                maliciousDependencies: entry.ioc.maliciousDependencies ?? [],
+                references: entry.ioc.references ?? [],
+              },
+            },
+          ];
+
+          const lockfileResult = await LockfileScanner.scanDirectory(process.cwd());
+          alerts.push(...lockfileResult.alerts);
+
+          const result: ScanResult = { packageName, version, alerts, scannedAt: new Date() };
+          const duration = Date.now() - startTime;
+          this.displayResults(result, duration);
+          return result;
+        }
+
+        Logger.warning(
+          `${packageName}@${version} not found on npm registry (may have been unpublished)`
+        );
+      } else {
+        Logger.error(
+          `Failed to scan ${packageName}@${version}: ${
+            error instanceof Error ? error.message : 'Unknown error'
+          }`
+        );
+      }
+
       return {
         packageName,
         version,

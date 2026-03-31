@@ -2,9 +2,9 @@
 
 [![npm version](https://badge.fury.io/js/npm-malware-scanner.svg)](https://www.npmjs.com/package/npm-malware-scanner)
 [![npm downloads](https://img.shields.io/npm/dm/npm-malware-scanner.svg)](https://www.npmjs.com/package/npm-malware-scanner)
-[![license](https://img.shields.io/npm/l/npm-malware-scanner.svg)](https://github.com/socket-security/npm-scanner/blob/main/LICENSE)
+[![license](https://img.shields.io/npm/l/npm-malware-scanner.svg)](https://github.com/Sunrostern/npm-scanner/blob/main/LICENSE)
 
-Real-time malware scanner for npm packages. Detects install scripts, shell access, obfuscated code, network access, filesystem access, and typosquatting attacks.
+Real-time malware scanner for npm packages. Detects install scripts, shell access, obfuscated code, network access, filesystem access, typosquatting attacks, and known-compromised supply chain versions.
 
 ### Key Resources Used
 
@@ -61,6 +61,20 @@ Monitor the npm registry feed in real-time:
 npm-scanner --live
 ```
 
+### Lockfile Scan
+
+Scan `package-lock.json`, `yarn.lock`, or `pnpm-lock.yaml` for known-compromised versions and IOC dependencies without hitting the registry:
+
+```bash
+# Scan lockfiles in the current directory
+npm-scanner --lockfile
+
+# Scan lockfiles in a specific directory
+npm-scanner --lockfile ./path/to/project
+```
+
+This mode is useful when a version has already been unpublished from npm (as happened with `axios@1.14.1` and `axios@0.30.4`) — registry-based scanning returns 404, but lockfile evidence of prior installation remains.
+
 ### CI/CD Integration
 
 The scanner automatically detects CI/CD environments and adapts output format.
@@ -82,21 +96,50 @@ See [CI-CD-INTEGRATION.md](./CI-CD-INTEGRATION.md) for detailed integration guid
 
 ### Install Scripts
 Identifies packages with lifecycle scripts that execute arbitrary code:
-- \`preinstall\`, \`install\`, \`postinstall\`
-- \`preuninstall\`, \`uninstall\`, \`postuninstall\`
+- `preinstall`, `install`, `postinstall`
+- `preuninstall`, `uninstall`, `postuninstall`
 
 **Severity:** High
 
+### Shell Access
+Detects use of `child_process` APIs that can run system commands:
+- `exec`, `execSync`, `spawn`, `spawnSync`, `execFile`
+- Shell command strings passed to process execution
+
+**Severity:** High
+
+### Obfuscated Code
+Calculates Shannon entropy on each source file. Files with entropy above the threshold are flagged as likely obfuscated or encoded payloads.
+
+**Severity:** High
+
+### Typosquatting
+Compares the package name against the top npm packages using Levenshtein distance. Close matches are flagged as potential brand-jacking attempts.
+
+**Severity:** High (very close match) / Medium
+
 ### Network Access
 Detects packages making network requests:
-- Node.js modules: \`http\`, \`https\`, \`net\`, \`dgram\`, \`dns\`
-- Browser APIs: \`fetch\`, \`XMLHttpRequest\`, \`WebSocket\`, \`EventSource\`
-- Popular libraries: \`axios\`, \`node-fetch\`, \`got\`, \`superagent\`, \`request\`
+- Node.js modules: `http`, `https`, `net`, `dgram`, `dns`
+- Browser APIs: `fetch`, `XMLHttpRequest`, `WebSocket`, `EventSource`
+- Popular libraries: `axios`, `node-fetch`, `got`, `superagent`, `request`
 
 **Severity:** Medium
 
-### Typosquatting
-Identifies packages with names similar to popular packages using Levenshtein distance.
+### Filesystem Access
+Detects use of `fs` module operations that read, write, or modify files on disk:
+- `writeFile`, `appendFile`, `unlink`, `rename`, `chmod`, `chown`
+- Recursive directory operations (`rmdir`, `rm`)
+
+**Severity:** Medium
+
+### Known Compromised Version
+Checks the requested version against a built-in database of known supply chain incidents. When a version matches and has been unpublished from npm (returning 404), the scanner reports it as a confirmed IOC rather than a generic fetch failure, and automatically runs a lockfile scan.
+
+**Severity:** High
+
+### Lockfile Match
+When scanning lockfiles (`--lockfile` mode or triggered automatically after a known-compromised 404), every resolved dependency is checked against the known-bad version list and IOC dependency list (e.g. `plain-crypto-js` from the axios incident).
 
 **Severity:** High
 
@@ -104,19 +147,25 @@ Identifies packages with names similar to popular packages using Levenshtein dis
 
 ```
 src/
-├── cli.ts                    # CLI entry point
-├── scanner.ts                # Scan orchestration
-├── types.ts                  # TypeScript interfaces
+├── cli.ts                      # CLI entry point (scan, --live, --lockfile)
+├── scanner.ts                  # Scan orchestration
+├── types.ts                    # TypeScript interfaces & AlertType enum
 ├── detectors/
-│   ├── install-scripts.ts    # Lifecycle script detection
-│   ├── network-access.ts     # Network access detection (AST + regex)
-│   └── typosquat.ts          # Typosquat detection
+│   ├── install-scripts.ts      # Lifecycle script detection
+│   ├── network-access.ts       # Network access detection (AST + regex)
+│   ├── typosquat.ts            # Typosquat detection (Levenshtein distance)
+│   ├── filesystem-access.ts    # Filesystem write/delete detection
+│   ├── obfuscation.ts          # Shannon entropy analysis
+│   └── shell-access.ts         # child_process / exec detection
+├── ioc/
+│   ├── known-bad.ts            # Known-compromised version database
+│   └── lockfile-scanner.ts     # Lockfile IOC scanner (npm/yarn/pnpm)
 ├── npm/
-│   ├── registry.ts           # Package fetching & extraction
-│   └── feed.ts               # Live feed monitoring
+│   ├── registry.ts             # Package fetching, extraction, 404 handling
+│   └── feed.ts                 # Live CouchDB changes feed monitoring
 └── utils/
-    ├── logger.ts             # Output formatting
-    └── environment.ts        # CI/CD detection
+    ├── logger.ts               # Output formatting (terminal, CI, GitHub Actions)
+    └── environment.ts          # CI/CD environment detection
 ```
 
 ## Design Decisions
@@ -152,7 +201,7 @@ export class MyDetector {
     
     // Your detection logic
     
-    return { alerts };
+    return { detected: alerts.length > 0, alerts };
   }
 }
 ```
@@ -223,10 +272,11 @@ pnpm test:coverage
 
 ## Known Limitations
 
-- **Static analysis only** - Cannot detect runtime behavior
-- **No dependency scanning** - Only scans the target package
-- **Obfuscation** - Heavily obfuscated code may evade detection
-- **False positives** - Legitimate packages may trigger alerts (e.g., HTTP clients)
+- **Static analysis only** - Cannot detect runtime behavior or dynamically constructed payloads
+- **Registry-dependent** - If a version is unpublished, tarball scanning falls back to lockfile IOC mode; no tarball analysis is possible
+- **Obfuscation ceiling** - Sufficiently layered obfuscation may fall below the entropy threshold
+- **False positives** - Legitimate packages may trigger alerts (e.g., HTTP clients flagged for network access)
+- **Known-bad database** - Only incidents explicitly added to `src/ioc/known-bad.ts` are covered; zero-day supply chain attacks are not detected until the database is updated
 
 ## Performance
 
@@ -238,9 +288,10 @@ pnpm test:coverage
 ## Contributing
 
 Contributions welcome! Areas of interest:
-- New detectors (shell access, crypto mining, data exfiltration)
-- Performance improvements
-- Better obfuscation detection
+- Expanding `src/ioc/known-bad.ts` with new supply chain incidents
+- New detectors (crypto mining, prototype pollution, data exfiltration patterns)
+- Performance improvements (parallel lockfile parsing, caching)
+- Better obfuscation detection (multi-pass entropy, AST-based deobfuscation)
 - Additional CI/CD integrations
 
 ## License

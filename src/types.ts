@@ -5,6 +5,8 @@ export enum AlertType {
   FILESYSTEM_ACCESS = 'filesystem_access',
   OBFUSCATED_CODE = 'obfuscated_code',
   SHELL_ACCESS = 'shell_access',
+  KNOWN_COMPROMISED = 'known_compromised',
+  LOCKFILE_MATCH = 'lockfile_match',
 }
 
 export interface Alert {

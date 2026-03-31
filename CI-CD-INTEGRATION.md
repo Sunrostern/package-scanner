@@ -399,5 +399,4 @@ Ensure you're using the correct syntax:
 ## Support
 
 For issues or questions:
-- GitHub: https://github.com/socket-security/npm-scanner/issues
 - npm: https://www.npmjs.com/package/npm-malware-scanner

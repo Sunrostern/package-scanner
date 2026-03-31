@@ -88,6 +88,14 @@ export class Logger {
           console.log(`::${command}::Scripts: ${Object.keys(details.scripts).join(', ')}`);
         } else if (details.similarTo) {
           console.log(`::${command}::Similar to ${details.similarTo} (${(details.similarity * 100).toFixed(1)}% match)`);
+        } else if (details.incident) {
+          console.log(`::${command}::Incident: ${details.incident} (${details.date})`);
+          console.log(`::${command}::${details.description}`);
+          if (Array.isArray(details.maliciousDependencies) && details.maliciousDependencies.length > 0) {
+            console.log(`::${command}::IOC dependencies: ${details.maliciousDependencies.join(', ')}`);
+          }
+        } else if (details.file) {
+          console.log(`::${command}::Found in: ${details.file}`);
         }
       }
       return;
@@ -119,6 +127,14 @@ export class Logger {
         } else if (details.similarTo) {
           console.log(`\nSimilar to: ${details.similarTo}`);
           console.log(`Distance: ${details.distance}, Similarity: ${(details.similarity * 100).toFixed(1)}%`);
+        } else if (details.incident) {
+          console.log(`\nIncident: ${details.incident} (${details.date})`);
+          console.log(details.description);
+          if (Array.isArray(details.maliciousDependencies) && details.maliciousDependencies.length > 0) {
+            console.log(`IOC dependencies: ${details.maliciousDependencies.join(', ')}`);
+          }
+        } else if (details.file) {
+          console.log(`\nFound in: ${details.file}`);
         }
       }
       console.log('='.repeat(60));
@@ -165,6 +181,14 @@ export class Logger {
       } else if (details.similarTo) {
         console.log(colorFn('│  ') + chalk.gray(`Similar to: ${details.similarTo}`));
         console.log(colorFn('│  ') + chalk.gray(`Distance: ${details.distance}, Similarity: ${(details.similarity * 100).toFixed(1)}%`));
+      } else if (details.incident) {
+        console.log(colorFn('│  ') + chalk.gray(`Incident: ${details.incident} (${details.date})`));
+        console.log(colorFn('│  ') + chalk.gray(details.description));
+        if (Array.isArray(details.maliciousDependencies) && details.maliciousDependencies.length > 0) {
+          console.log(colorFn('│  ') + chalk.gray(`IOC dependencies: ${details.maliciousDependencies.join(', ')}`));
+        }
+      } else if (details.file) {
+        console.log(colorFn('│  ') + chalk.gray(`Found in: ${details.file}`));
       }
     }
     
